@@ -1,0 +1,2 @@
+
+export { commonTags } from './commonTags';

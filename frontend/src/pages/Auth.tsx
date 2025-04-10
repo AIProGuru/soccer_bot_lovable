@@ -23,7 +23,7 @@ const Auth = () => {
         data: { session },
       } = await supabase.auth.getSession();
       if (session) {
-        navigate("/");
+        navigate("/index");
       }
     };
 
@@ -120,7 +120,7 @@ const Auth = () => {
           // await axios.post('/api/init-user', { user_id: userId, email });
         }
       }
-      navigate("/");
+      navigate("/index");
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({

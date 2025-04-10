@@ -1,12 +1,13 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import "@/App.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import Auth from "./pages/Auth";
 import AuthGuard from "./components/AuthGuard";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing"
 import NotFound from "./pages/NotFound";
-import "@/App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import OpponentAnalysis from "./components/OpponentAnalysis";
 import TrainingSession from "./pages/TrainingSession";
@@ -27,9 +28,10 @@ function App() {
         <Router>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={<Landing />} />
             <Route path="/subscription" element={<Subscription />} />
             <Route 
-              path="/" 
+              path="/index" 
               element={
                 <AuthGuard>
                   <Index />

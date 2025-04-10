@@ -1,6 +1,7 @@
 // Replace this entire component with the following:
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const sections = [
   { id: "home", label: "Home" },
@@ -28,6 +29,7 @@ const faqs = [
 ];
 
 const LandingPage = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
   const [activeFAQ, setActiveFAQ] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -190,6 +192,7 @@ const LandingPage = () => {
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: "#3B82F6" }}
             className="bg-blue-600 text-white text-base sm:text-lg px-5 py-3 rounded-2xl shadow-md"
+            onClick={()=>navigate("/index")}
           >
             UNLOCK YOUR SECRET
           </motion.button>
@@ -221,6 +224,7 @@ const LandingPage = () => {
         <motion.button
           whileHover={{ scale: 1.05, backgroundColor: "#3B82F6" }}
           className="bg-blue-600 text-white text-base sm:text-lg px-5 py-3 rounded-2xl shadow-md"
+          onClick={()=>navigate("/index")}
         >
           UNLOCK YOUR SECRET
         </motion.button>
@@ -260,6 +264,7 @@ const LandingPage = () => {
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: "#3B82F6" }}
             className="bg-blue-600 text-white text-base sm:text-lg px-5 py-3 rounded-2xl shadow-md"
+            onClick={()=>navigate("/index")}
           >
             UNLOCK YOUR SECRET
           </motion.button>

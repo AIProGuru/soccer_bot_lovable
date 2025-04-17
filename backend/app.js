@@ -45,6 +45,7 @@ const tokensRouter = require('./src/router/tokenRouter');
 const appearanceRouter = require('./src/router/appearanceRouter');
 const chatRouter = require('./src/router/chatRouter')
 const assistantRouter = require('./src/router/assistantRouter')
+const subscriptionRouter = require('./src/router/subscriptionRouter')
 
 //Use Router
 app.use("/v1/user", userRouter);
@@ -53,6 +54,7 @@ app.use("/v1/ticket", ticketRouter);
 app.use('/v1/tokens', tokensRouter);
 app.use('/v1/chat', chatRouter);
 app.use('/v1/assistant', assistantRouter);
+app.use('/v1/subscription', subscriptionRouter);
 
 
 app.use("*", (req, res, next) => {

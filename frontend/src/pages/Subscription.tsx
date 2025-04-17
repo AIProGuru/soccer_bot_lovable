@@ -1,15 +1,23 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+
+const BACKEND_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 const pricingPlans = [
   {
-    id: "monthly",
+    id: "basic",
     name: "Basic",
     price: "$9.99",
     billing: "per month",
@@ -23,7 +31,7 @@ const pricingPlans = [
     ],
   },
   {
-    id: "annual",
+    id: "pro",
     name: "Pro",
     price: "$19.99",
     billing: "per month",
@@ -39,7 +47,7 @@ const pricingPlans = [
     popular: true,
   },
   {
-    id: "lifetime",
+    id: "elite",
     name: "Elite",
     price: "$199.99",
     billing: "one-time payment",
@@ -70,6 +78,7 @@ const Subscription = () => {
     isInTrial: false,
   });
   const [loading, setLoading] = useState(true);
+  const [subscribingPlan, setSubscribingPlan] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -77,27 +86,45 @@ const Subscription = () => {
     const checkSubscription = async () => {
       try {
         // In a real app, this would be an API call to check the subscription status
-        const { data: { session } } = await supabase.auth.getSession();
-        
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         if (!session) {
           navigate("/auth");
           return;
         }
 
-        // This is a simplified mock implementation - in a real app, 
+        // This is a simplified mock implementation - in a real app,
         // you would fetch subscription data from your database
-        const mockTrialEndDate = new Date();
-        mockTrialEndDate.setDate(mockTrialEndDate.getDate() + 7); // 7 days from now
-        
-        const today = new Date();
-        const diffTime = mockTrialEndDate.getTime() - today.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+        const trialStartStr = localStorage.getItem("trialStart");
+        let isInTrial = false;
+        let daysLeft = 0;
+
+        if (trialStartStr) {
+          const trialStart = new Date(trialStartStr);
+          const now = new Date();
+
+          // 7 day trial period
+          const trialEnd = new Date(trialStart);
+          trialEnd.setDate(trialStart.getDate() + 7);
+
+          if (now <= trialEnd) {
+            isInTrial = true;
+            daysLeft = Math.ceil(
+              (trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+            );
+          }
+        }
+
+        // Check if user has an active subscription
+        const subscriptionPlan = localStorage.getItem("subscriptionPlan");
+
         setStatus({
-          isActive: true,
-          isInTrial: true,
-          trialEnd: mockTrialEndDate,
-          daysLeft: diffDays,
+          isActive: !!subscriptionPlan,
+          isInTrial: isInTrial,
+          plan: subscriptionPlan || undefined,
+          daysLeft: daysLeft,
         });
       } catch (error) {
         console.error("Error checking subscription:", error);
@@ -111,42 +138,52 @@ const Subscription = () => {
 
   const handleSubscribe = async (planId: string) => {
     try {
-      toast({
-        title: "Subscription process",
-        description: `Starting subscription process for ${planId} plan...`,
-      });
-      
-      // In a real application, you would:
-      // 1. Call an edge function that creates a Stripe Checkout session
-      // 2. Redirect the user to the Stripe Checkout page
-      // 3. Handle the redirect back and update the subscription status
+      setSubscribingPlan(planId);
 
-      // Mock implementation for demonstration
-      setTimeout(() => {
-        toast({
-          title: "Subscription successful",
-          description: "You've been subscribed to our service successfully!",
-        });
-        
-        setStatus({
-          isActive: true,
-          plan: planId,
-          isInTrial: false,
-        });
-      }, 2000);
+      toast({
+        title: "Processing",
+        description: `Setting up your ${planId} plan...`,
+      });
+
+      // Call the Express backend to create a Stripe checkout session
+      const response = await fetch(
+        `${BACKEND_SERVER_URL}/v1/subscription/create-checkout`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan: planId }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create checkout session");
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Stripe checkout
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error("No checkout URL received from server");
+      }
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message || "Failed to process subscription",
         variant: "destructive",
       });
+      setSubscribingPlan(null);
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-coaching-900">
-        <div className="text-white text-xl">Loading subscription details...</div>
+        <div className="text-white text-xl">
+          Loading subscription details...
+        </div>
       </div>
     );
   }
@@ -156,7 +193,9 @@ const Subscription = () => {
       <div className="max-w-7xl mx-auto">
         {status.isInTrial && (
           <div className="bg-coaching-700 text-coaching-50 p-4 rounded-lg mb-8 text-center">
-            <h2 className="text-xl font-bold">You're currently in your 7-day free trial</h2>
+            <h2 className="text-xl font-bold">
+              You're currently in your 7-day free trial
+            </h2>
             <p className="mt-2">
               {status.daysLeft && status.daysLeft > 0
                 ? `${status.daysLeft} days remaining. Choose a plan to continue after your trial ends.`
@@ -166,7 +205,9 @@ const Subscription = () => {
         )}
 
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-coaching-50 sm:text-4xl">Choose Your Plan</h1>
+          <h1 className="text-3xl font-bold text-coaching-50 sm:text-4xl">
+            Choose Your Plan
+          </h1>
           <p className="mt-4 text-xl text-coaching-200">
             Get unlimited access to all our coaching tools and features
           </p>
@@ -174,11 +215,11 @@ const Subscription = () => {
 
         <div className="grid gap-8 lg:grid-cols-3">
           {pricingPlans.map((plan) => (
-            <Card 
+            <Card
               key={plan.id}
               className={`flex flex-col ${
-                plan.popular 
-                  ? "border-coaching-500 relative overflow-hidden" 
+                plan.popular
+                  ? "border-coaching-500 relative overflow-hidden"
                   : "border-coaching-700 bg-coaching-800"
               }`}
             >
@@ -191,12 +232,18 @@ const Subscription = () => {
               )}
 
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-coaching-50">{plan.name}</CardTitle>
-                <CardDescription className="text-coaching-200">{plan.description}</CardDescription>
+                <CardTitle className="text-2xl font-bold text-coaching-50">
+                  {plan.name}
+                </CardTitle>
+                <CardDescription className="text-coaching-200">
+                  {plan.description}
+                </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-coaching-50">{plan.price}</span>
+                  <span className="text-4xl font-bold text-coaching-50">
+                    {plan.price}
+                  </span>
                   <span className="text-coaching-300 ml-2">{plan.billing}</span>
                 </div>
                 <ul className="space-y-3">
@@ -213,16 +260,30 @@ const Subscription = () => {
                   onClick={() => handleSubscribe(plan.id)}
                   variant={plan.popular ? "coaching" : "outline"}
                   className="w-full"
+                  disabled={
+                    subscribingPlan === plan.id || status.plan === plan.id
+                  }
                 >
-                  {status.plan === plan.id ? "Current Plan" : "Subscribe"}
+                  {subscribingPlan === plan.id ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing
+                    </>
+                  ) : status.plan === plan.id ? (
+                    "Current Plan"
+                  ) : (
+                    "Subscribe"
+                  )}
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
-        
+
         <div className="mt-12 text-center text-coaching-300">
-          <p>Questions about our plans? Contact us at support@coachingapp.com</p>
+          <p>
+            Questions about our plans? Contact us at support@coachingapp.com
+          </p>
         </div>
       </div>
     </div>

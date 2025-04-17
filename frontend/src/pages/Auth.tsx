@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { Facebook, Github } from "lucide-react";
 
 const BACKEND_SERVER_URL = import.meta.env.VITE_SERVER_URL;
+const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
+
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -46,7 +48,7 @@ const Auth = () => {
         email,
         password,
         options: {
-          emailRedirectTo: "http://localhost:8080/",
+          emailRedirectTo: REDIRECT_URL,
         },
       });
       if (error) throw error;

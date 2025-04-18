@@ -16,20 +16,20 @@ router.post("/create-checkout", async (req, res) => {
     const planConfig = {
       basic: {
         name: "Basic Plan",
-        amount: 999,
+        amount: 1999,
         type: "subscription",
         interval: "month",
       },
       pro: {
         name: "Pro Plan",
-        amount: 1999,
+        amount: 3999,
         type: "subscription",
         interval: "month",
       },
       elite: {
         name: "Elite Plan",
-        amount: 19999,
-        type: "one-time",
+        amount: 9999,
+        type: "subscription",
       },
     };
 
@@ -58,7 +58,7 @@ router.post("/create-checkout", async (req, res) => {
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ['card', 'paypal'],
       line_items: [
         {
           price_data: priceData,

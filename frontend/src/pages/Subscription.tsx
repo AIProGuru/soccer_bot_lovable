@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,7 +19,7 @@ const pricingPlans = [
   {
     id: "basic",
     name: "Basic",
-    price: "$9.99",
+    price: "$19.99",
     billing: "per month",
     description: "For individuals getting started",
     features: [
@@ -33,7 +33,7 @@ const pricingPlans = [
   {
     id: "pro",
     name: "Pro",
-    price: "$19.99",
+    price: "$39.99",
     billing: "per month",
     description: "For serious coaches",
     features: [
@@ -49,8 +49,8 @@ const pricingPlans = [
   {
     id: "elite",
     name: "Elite",
-    price: "$199.99",
-    billing: "one-time payment",
+    price: "$99.99",
+    billing: "per month",
     description: "For professional coaches",
     features: [
       "Everything in Pro",
@@ -143,6 +143,7 @@ const Subscription = () => {
       toast({
         title: "Processing",
         description: `Setting up your ${planId} plan...`,
+        duration: 3000,
       });
 
       // Call the Express backend to create a Stripe checkout session
@@ -211,6 +212,10 @@ const Subscription = () => {
           <p className="mt-4 text-xl text-coaching-200">
             Get unlimited access to all our coaching tools and features
           </p>
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <img src="/stripe-logo.png" alt="Stripe" className="h-8" />
+            <img src="/paypal-logo.png" alt="PayPal" className="h-8" />
+          </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
@@ -280,10 +285,20 @@ const Subscription = () => {
           ))}
         </div>
 
-        <div className="mt-12 text-center text-coaching-300">
-          <p>
+        <div className="mt-12 text-center">
+          <p className="text-coaching-300">
             Questions about our plans? Contact us at support@coachingapp.com
           </p>
+          <div className="mt-4 flex justify-center items-center gap-4">
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-coaching-500" />
+              <span className="text-coaching-200">Credit Card</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <img src="/paypal-icon.svg" alt="PayPal" className="h-5 w-5" />
+              <span className="text-coaching-200">PayPal</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

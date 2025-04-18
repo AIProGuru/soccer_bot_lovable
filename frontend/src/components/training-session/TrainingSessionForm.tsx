@@ -11,6 +11,7 @@ import { FormButtons } from "./form-sections/FormButtons";
 import { ageFocusSuggestions, drillNameSuggestions, noteTemplates } from "./constants";
 import { type SessionTemplate } from "./templates";
 import { getTagsByTrainingStyle } from "./constants/tagConstants";
+import { ResponseLengthToggle } from "../shared/ResponseLengthToggle";
 
 export const TrainingSessionForm = ({ 
   onSubmit, 
@@ -32,6 +33,7 @@ export const TrainingSessionForm = ({
     tags: [],
   });
 
+  const [detailedResponse, setDetailedResponse] = useState(false);
   const [suggestedDrillNames, setSuggestedDrillNames] = useState<string[]>([]);
   const [suggestedNotes, setSuggestedNotes] = useState<string[]>([]);
   const [filteredTrainingStyles, setFilteredTrainingStyles] = useState<string[]>([]);
@@ -116,6 +118,10 @@ export const TrainingSessionForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <ResponseLengthToggle
+        isDetailed={detailedResponse}
+        onToggle={setDetailedResponse}
+      />
       <div className="flex justify-between items-center mb-2">
         <div className="flex gap-2">
           <TemplatesSelector onApplyTemplate={applyTemplate} />

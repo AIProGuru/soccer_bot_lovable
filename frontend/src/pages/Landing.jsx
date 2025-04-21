@@ -135,16 +135,16 @@ const LandingPage = () => {
         },
         {
           id: "problem",
-          title: "Coaching Without AI? Here’s Why You’re Falling Behind",
+          title: "Coaching Without AI? You're Doing It the Hard Way",
           img: "./Problem.png",
           items: [
-            "Stop Wasting Hours on Film – AI Analyzes Matches in Seconds",
-            "Your Rivals Use AI – If You Don’t, You’re Playing Catch-Up",
-            "Training Mistakes Cost Wins & Players – AI Prevents That",
-            "You’re Managing Players, Opponents & Pressure — Alone. AI becomes your tactical assistant, working 24/7 behind the scenes.",
+            "Reviewing matches manually takes hours. AI cuts that down to minutes.",
+            "Your competitors are starting to use tools like this. You don't need to fall behind.",
+            "Training mistakes can cost wins — and players. We help you avoid both.",
+            "Coaching means juggling pressure, planning, and people. AI quietly handles the analysis, so you can focus on leading.",
           ],
           description:
-            "Solution: AI Turns Your Decisions from Guesswork to Game-Winning Strategy",
+            "This isn't about replacing coaches. It's about giving you back time, clarity, and a tactical edge.",
         },
         {
           id: "advantage",
@@ -192,7 +192,7 @@ const LandingPage = () => {
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: "#3B82F6" }}
             className="bg-blue-600 text-white text-base sm:text-lg px-5 py-3 rounded-2xl shadow-md"
-            onClick={()=>navigate("/index")}
+            onClick={() => navigate("/index")}
           >
             UNLOCK YOUR SECRET
           </motion.button>
@@ -212,19 +212,23 @@ const LandingPage = () => {
           whileInView={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8 }}
         />
-        <h2 className="text-3xl sm:text-4xl font-bold mb-6">How It Works</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold mb-6">How It Works (Real Value Edition)</h2>
         <div className="text-gray-300 space-y-4 text-base sm:text-lg mb-8 text-left sm:text-center">
-          <p>1. Upload your match footage or opponent data.</p>
-          <p>2. Let our AI process formations, movements, and patterns.</p>
-          <p>
-            3. Receive actionable tactical reports and strategy suggestions.
+          <p className="font-bold text-lg sm:text-xl">1. Tell us what you're working on.</p>
+          <p className="text-gray-500">Are you preparing for a tough match? Struggling to organize training? Just let us know the situation - no footage, no fluff.</p>
+          <p className="font-bold text-lg sm:text-xl">2. We run the heavy lifting in the background.</p>
+          <p className="text-gray-500">Our AI pulls from real tactical patterns and coaching best practices to give you something useful - not generic.</p>
+          <p className="font-bold text-lg sm:text-xl">
+            3. You get simple, focused insights.
           </p>
-          <p>4. Apply insights on training ground and matchday — instantly.</p>
+          <p className="text-gray-500">We deliver game plans, session ideas, and tactical suggestions that actually make your life easier.</p>
+          <p className="font-bold text-lg sm:text-xl">4. You stay in control.</p>
+          <p className="text-gray-500">Take what fits. Use it in your next training, match prep, or just to get out of a planning rut.</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.05, backgroundColor: "#3B82F6" }}
           className="bg-blue-600 text-white text-base sm:text-lg px-5 py-3 rounded-2xl shadow-md"
-          onClick={()=>navigate("/index")}
+          onClick={() => navigate("/index")}
         >
           UNLOCK YOUR SECRET
         </motion.button>
@@ -249,7 +253,7 @@ const LandingPage = () => {
               </button>
               {activeFAQ === index && (
                 <motion.p
-                  className="mt-2 text-gray-400 text-base"
+                  className="mt-2 text-gray-400 text-base text-left"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ duration: 0.3 }}
@@ -264,7 +268,7 @@ const LandingPage = () => {
           <motion.button
             whileHover={{ scale: 1.05, backgroundColor: "#3B82F6" }}
             className="bg-blue-600 text-white text-base sm:text-lg px-5 py-3 rounded-2xl shadow-md"
-            onClick={()=>navigate("/index")}
+            onClick={() => navigate("/index")}
           >
             UNLOCK YOUR SECRET
           </motion.button>

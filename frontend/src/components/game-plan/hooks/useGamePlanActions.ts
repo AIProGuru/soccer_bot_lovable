@@ -81,13 +81,15 @@ export const useGamePlanActions = (
             matchDetails,
             tactics,
             keyTacticalPrinciples: tactics.keyTacticalPrinciples,
-            assistantId: profile.assistant_id,
             threadId: profile.thread_id,
           }),
         }
       );
 
-      if (response.error) throw response.error;
+      if (!response.ok) {
+        const errorText = await response.json(); // You can use response.json() if the backend returns JSON
+        throw new Error(`Failed to generate plan: ${errorText}`);
+      }
 
       const responseData = await response.json() 
       console.log(responseData)

@@ -64,7 +64,6 @@ export const TacticalFollowupChat = ({
             matchDetails,
             aiSuggestions,
             keyTacticalPrinciples: tactics.keyTacticalPrinciples,
-            assistantId: profile.assistant_id,
             threadId: profile.thread_id,
           }),
         }

@@ -80,13 +80,15 @@ export const useCoachChat = () => {
           },
           body: JSON.stringify({
             message: userQuery,
-            assistantId: profile.assistant_id,
             threadId: profile.thread_id,
           }),
         }
       );
 
-      if (response.error) throw response.error;
+      if (!response.ok) {
+        const errorText = await response.text(); // You can use response.json() if the backend returns JSON
+        throw new Error(`Failed to generate plan: ${errorText}`);
+      }
 
       const responseData = await response.json();
 

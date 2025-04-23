@@ -5,6 +5,8 @@ const { uploadFiles } = require('../model/assistant/Assistant.model');
 const router = express.Router();
 const OpenAI = require("openai");
 
+const ASSISTANT_ID = process.env.ASSISTANT_ID
+
 const formatObjectToString = (obj) => {
   return Object.entries(obj)
     .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
@@ -24,12 +26,12 @@ router.post('/', async (req, res) => {
 
   try {
     // Step 1: Create Assistant in OpenAI
-    const assistant = await openai.beta.assistants.create({
-      name: `Soccer Bot - User ${userId}`,
-      instructions: "You are a soccer analytics bot. Answer user questions based on uploaded soccer data.",
-      model: "gpt-4o",
-      tools: [{ type: "file_search" }],
-    });
+    // const assistant = await openai.beta.assistants.create({
+    //   name: `Soccer Bot - User ${userId}`,
+    //   instructions: "You are a soccer analytics bot. Answer user questions based on uploaded soccer data.",
+    //   model: "gpt-4o",
+    //   tools: [{ type: "file_search" }],
+    // });
 
     // Step 2: Create a Thread for the Assistant
     const thread = await openai.beta.threads.create();
@@ -41,7 +43,6 @@ router.post('/', async (req, res) => {
     // });
 
     const newAssistant = {
-      assistantId: assistant.id,
       threadId: thread.id
     };
 
@@ -54,14 +55,47 @@ router.post('/', async (req, res) => {
   }
 })
 
+router.post('/create-assistant', async (req, res) => {
+  try {
+    const assistant = await openai.beta.assistants.create({
+      name: `Soccer Bot`,
+      instructions: "You are a soccer analytics bot assisting football coaching.",
+      model: "gpt-4o",
+      // tools: [{ type: "retrieval" }],
+    });
+
+    res.json({ message: "Assistant Created Successfully", id: assistant.id });
+    //save this assistant id in .env file
+
+  } catch (error) {
+    console.error("Assistant Creation Failed:", error.response?.data || error.message);
+    res.status(500).send("Assistant Creation Failed");
+  }
+})
+
+router.get('/get-assistant', async (req, res) => {
+  try {
+    const assistants = await openai.beta.assistants.list();
+
+    res.json({
+      message: "Assistant list fetched successfully",
+      assistants: assistants.data,
+    });
+
+  } catch (error) {
+    console.error("Failed to fetch assistant list:", error.response?.data || error.message);
+    res.status(500).send("Failed to fetch assistant list");
+  }
+});
+
 router.post("/generate-training-plan", async (req, res) => {
-  const { drillName, duration, ageGroup, trainingFocus, playerCount, physicalIntensity, trainingStyle, notes, assistantId, threadId } = req.body;
-  if (!assistantId && !threadId) {
+  const { drillName, duration, ageGroup, trainingFocus, playerCount, physicalIntensity, trainingStyle, notes, threadId } = req.body;
+  if (!threadId) {
     return res
       .status(400)
       .json({
         status: "error",
-        message: "Invalid request. Message is required.",
+        message: "Invalid request. Thread ID is required.",
       });
   }
   try {
@@ -79,7 +113,7 @@ router.post("/generate-training-plan", async (req, res) => {
     let run = await openai.beta.threads.runs.createAndPoll(
       threadId,
       {
-        assistant_id: assistantId,
+        assistant_id: ASSISTANT_ID,
         instructions: "AI Training Plan Generator"
       }
     );
@@ -109,7 +143,7 @@ router.post("/generate-training-plan", async (req, res) => {
 
 router.post("/generate-game-plan-ai", async (req, res) => {
 
-  const { matchDetails, tactics, keyTacticalPrinciples, threadId, assistantId } = req.body;
+  const { matchDetails, tactics, keyTacticalPrinciples, threadId } = req.body;
   console.log(matchDetails)
   try {
 
@@ -139,7 +173,7 @@ router.post("/generate-game-plan-ai", async (req, res) => {
     let run = await openai.beta.threads.runs.createAndPoll(
       threadId,
       {
-        assistant_id: assistantId,
+        assistant_id: ASSISTANT_ID,
       }
     );
 
@@ -166,7 +200,7 @@ router.post("/generate-game-plan-ai", async (req, res) => {
 });
 
 router.post("/generate-followup-chat", async (req, res) => {
-  const { userQuery, tactics, matchDetails, aiSuggestions, keyTacticalPrinciples, assistantId, threadId } = req.body;
+  const { userQuery, tactics, matchDetails, aiSuggestions, keyTacticalPrinciples, threadId } = req.body;
   if (!userQuery) {
     return res
       .status(400)
@@ -189,7 +223,7 @@ router.post("/generate-followup-chat", async (req, res) => {
     let run = await openai.beta.threads.runs.createAndPoll(
       threadId,
       {
-        assistant_id: assistantId,
+        assistant_id: ASSISTANT_ID,
         instructions: `You are a soccer assistant helping coaches to make a game plan. you will use the following game data as your base. Tactics: ${tactics}, Match Details: ${matchDetails}, AI Suggestions: ${aiSuggestions}, Key Tactical Principles: ${keyTacticalPrinciples} `,
       }
     );
@@ -218,7 +252,7 @@ router.post("/generate-followup-chat", async (req, res) => {
 });
 
 router.post("/elite-coach-advisor", async (req, res) => {
-  const { message, assistantId, threadId } = req.body;
+  const { message, threadId } = req.body;
   if (!message) {
     return res
       .status(400)
@@ -241,7 +275,7 @@ router.post("/elite-coach-advisor", async (req, res) => {
     let run = await openai.beta.threads.runs.createAndPoll(
       threadId,
       {
-        assistant_id: assistantId,
+        assistant_id: ASSISTANT_ID,
         instructions: `You are an Elite Coach Assistant with UEFA Pro License expertise.`,
       }
     );

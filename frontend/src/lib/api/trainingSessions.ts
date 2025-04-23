@@ -65,19 +65,21 @@ export const generateTrainingSession = async (formData: {
           physicalIntensity: formData.physicalIntensity,
           trainingStyle: formData.trainingStyle,
           notes: formData.notes || "",
-          assistantId: profile.assistant_id,
           threadId: profile.thread_id,
         }),
       }
     );
 
-    if (response.error) throw response.error;
+    if (!response.ok) {
+      const errorText = await response.json(); // You can use response.json() if the backend returns JSON
+      throw new Error(`Failed to generate plan: ${errorText}`);
+    }
 
     const responseData = await response.json();
 
     const message = responseData["message"];
 
-    console.log(message)
+    console.log(message);
 
     // Save to database with AI-generated content
     const { data, error } = await supabase
@@ -122,6 +124,7 @@ export const generateTrainingSession = async (formData: {
     }
 
     return data;
+    
   } catch (error) {
     console.error("Error generating training session:", error);
     throw error;

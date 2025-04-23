@@ -7,9 +7,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Facebook, Github } from "lucide-react";
 
-const BACKEND_SERVER_URL = import.meta.env.VITE_SERVER_URL;
-const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
 
+const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -88,40 +87,6 @@ const Auth = () => {
         title: "Success",
         description: "Successfully signed in!",
       });
-      // ✅ Check user_profile
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userId = sessionData.session?.user.id;
-      if (userId) {
-        const { data: profile, error: profileError } = await supabase
-          .from("user_profile")
-          .select("*")
-          .eq("user_id", userId)
-          .single();
-  
-        if (profileError && profileError.code === "PGRST116") {
-          // User profile doesn't exist — do something, e.g., init user
-          const Assistant = await fetch(`${BACKEND_SERVER_URL}/v1/assistant`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId }),
-          });
-          if(!Assistant.ok) {
-            throw new Error("Failed to create assistant");
-          }
-          const data = await Assistant.json()
-
-          await supabase.from("user_profile").insert({
-            user_id: userId,
-            created_at: new Date().toISOString(), // optional, if Supabase doesn't auto-generate it
-            assistant_id: data.ids.assistantId, // or some default value
-            thread_id: data.ids.threadId,    // or some default value
-          });
-          // Optionally trigger your backend API here instead
-          // await axios.post('/api/init-user', { user_id: userId, email });
-        }
-      }
       navigate("/index");
     } catch (error: any) {
       console.error("Sign in error:", error);
@@ -141,7 +106,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${window.location.origin}/index`,
         },
       });
       if (error) throw error;

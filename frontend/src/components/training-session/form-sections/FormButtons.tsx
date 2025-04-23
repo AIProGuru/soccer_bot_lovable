@@ -36,7 +36,7 @@ export const FormButtons = ({
         onClick={handleAIGenerate}
         disabled={loading || generatingPlan}
         variant="outline"
-        className="border-coaching-600 text-coaching-50 hover:bg-coaching-700/50 font-medium"
+        className="border-coaching-600 bg-coaching-600 text-coaching-50 hover:bg-coaching-700/50 font-medium"
       >
         <Wand2 className="mr-2" />
         {generatingPlan ? "Generating..." : "Generate with AI"}

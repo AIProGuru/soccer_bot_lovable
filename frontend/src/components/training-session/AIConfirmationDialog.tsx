@@ -50,7 +50,7 @@ export function AIConfirmationDialog({
             Review your selections before generating an AI training plan
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 text-primary">
           <div className="space-y-3 border rounded-lg p-4 bg-muted/30">
             <h3 className="font-medium flex items-center gap-2 text-primary">
               <Info className="h-4 w-4" />
@@ -131,7 +131,7 @@ export function AIConfirmationDialog({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="gap-2"
+            className="gap-2 text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
             Edit Selections

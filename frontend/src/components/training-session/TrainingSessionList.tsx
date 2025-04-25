@@ -191,7 +191,7 @@ export const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
       {sessions.map((session) => {
         const isOpen = openSessionIds.includes(session.id);
         const tags = JSON.parse(session.tags) || [];
-
+        
         return (
           <Collapsible
             key={session.id}

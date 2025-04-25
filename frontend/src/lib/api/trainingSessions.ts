@@ -14,7 +14,7 @@ export type TrainingSession = {
   training_style: string;
   ai_generated_plan?: string;
   is_favorite?: boolean;
-  tags?: string[];
+  tags?: string;
 };
 
 export const generateTrainingSession = async (formData: {

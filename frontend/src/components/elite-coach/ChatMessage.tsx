@@ -34,9 +34,15 @@ export const ChatMessage = ({ role, content, guidelineId }: MessageProps) => {
           ) : (
             <User className="h-5 w-5 text-blue-300 mt-1 flex-shrink-0" />
           )}
-          <p className="whitespace-pre-line text-start">
-            <ReactMarkdown>{content}</ReactMarkdown>
-          </p>
+          <ReactMarkdown
+            components={{
+              p: ({ children }) => (
+                <p className="whitespace-pre-line text-start">{children}</p>
+              ),
+            }}
+          >
+            {content}
+          </ReactMarkdown>
         </div>
         {guidelineId && (
           <div className="mt-2 text-xs text-coaching-300 italic">
